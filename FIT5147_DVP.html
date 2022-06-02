@@ -7,13 +7,92 @@
         </title>
     </head>
     <body>
-        <p>This is some random text</p>
-        <svg id="canvas" width = "500" height = "500">
-            <rect x = "0" y = "0" width = "300" height = "200" fill = "#005550">
-            </rect>
-        </svg>
+        <div class="introduction" >
+            <div class="introduction-image`"></div>
+            <p><h1>Introduction</h1></p>
+            <p>This is a visualization narrative created to explain the performance of team Natus Vincere in the CS:GO Major championship held at Stockholm in early November 2021.</p>
+            <p>Before the performance is analysed through the use of visuals, first a walkthrough of CS:GO must be done.</p>
+        </div>
+
+        <div class="about">
+            <p><h1>CS:GO and Major</h1></p>
+            <p>CS:GO (Counter Strike : Global Offensive) is a first person online multiplayer game that allows players to engage in a 5v5 battle for various tournaments. Among those is a tournament called the "Major".
+                It is the most pretigious tournament with the highest prize pool.
+            </p>
+            <p>
+                While the game can be traditionally classified as a victory through elimination due to the shooter nature of it, when playing at the highest professional level, it is way more complex than it appears
+                <br>
+                The game can be either won through - 
+                <ul>
+                    <li>Elimination of enemy team</li>
+                    <li>Planting/defusing bomb depending on the side</li>
+                </ul>
+                The game can be won by winning 16/30 rounds in regulation (or by winning 4/6 when overtime rules are applied) over 7 selected maps that are selected by the game
+                developers before the tournament.
+                <br>
+                Majors are events that consist of 16 teams of which 4 make the playoffs with 1 eventual champion. Currently there are 2 majors every <b>year</b>.
+            </p>
+        </div>  
+        <div class="visualzation-project">
+            <p><h1>Data Visualization Project</h1></p>
+            <p>
+                The most recent even was won by the team Natus Vincere undefeated in every map/series they played. This project is a way to analyse the performance of the champions in comparison to other 
+                teams at the event.
+            </p>
+        </div>
+
+        <div class="analysis">
+            <svg id="canvas"></svg>
+        </div>
+
+        <div class="text-here">
+            <p id="player-name"></p>
+        </div>
+
+        <!-- <svg id="canvas" width = "500" height = "500">
+            <rect x = "0" y = "0" width = "300" height = "200" fill = "#005550"></rect>
+        </svg> -->
+
         <script src="https://d3js.org/d3.v6.min.js"></script>
-        <script src="text/javascript">
+
+        <script type="text/javascript">
+            
+            // "https://raw.githubusercontent.com/viggggnesh/CSGO_Major_Data/main/updated_player_stats.csv" 
+            // "https://raw.githubusercontent.com/viggggnesh/CSGO_Major_Data/main/updated_player_stats.json"
+
+            window.onload = function(){
+
+                d3.csv("https://raw.githubusercontent.com/viggggnesh/CSGO_Major_Data/main/updated_player_stats.csv").then(function(data){
+
+                    // for (var  i=0; i<data.length; i++)    {
+                    //     const element = data[i]
+                    //     console.log(function(element){
+                    //         if (element.Name == "Niko"){
+                    //             var total 
+                    //             return total = sum(element, d => d.Kills);
+                    //         }
+                    //     })
+                    //     //console.log(element.Team);
+                    // }
+
+                    console.log(d3.sum(data, function(d)
+                    {
+                        if (d.Year.match(/.*2021/)){return d.Kills}
+                    }))
+                    
+                    // console.log(data[0].Name);
+
+                    d3.select(".text-here").append("player-name")
+                        .enter(data[0].Name)
+                        .append("p")
+                        // .html(function(data){
+                        //     if (data.Year == "01-11-2021"){return data.Name}
+                        // })
+                 
+
+                    })
+            
+            }
         </script>
     </body>
 </html>

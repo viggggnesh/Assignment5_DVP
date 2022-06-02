@@ -1,5 +1,31 @@
 body {
     height: 3000px; /* Used to enable scrolling */
+    background: rgb(131,58,180);
+    background: linear-gradient(32deg, rgba(131,58,180,1) 0%, rgba(182,85,85,1) 52%, rgba(252,176,69,1) 100%);
+
+    /* background: url(counter-strike-global-offensive-2.svg);
+    height:900px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: aquamarine; */
+    
     /* background: linear-gradient(55deg, #0fb8ad 0%, #1fc8db 51%, #2cb5e8 85%); */
-    background: url(natus-vincere.svg) right top repeat;
+
+    font-size: 17pt;
+    opacity: 1;
+
+  }
+
+.introduction{
+
+  color: brown;
+}
+
+.about {
+
+}
+
+.player_name{
+    color: aquamarine;
   }
