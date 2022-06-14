@@ -71,42 +71,47 @@
 
         <script type="text/javascript">
             
-            // "https://raw.githubusercontent.com/viggggnesh/CSGO_Major_Data/main/updated_player_stats.csv" 
-            // "https://raw.githubusercontent.com/viggggnesh/CSGO_Major_Data/main/updated_player_stats.json"
+            var file_csv = "https://raw.githubusercontent.com/viggggnesh/CSGO_Major_Data/main/updated_player_stats.csv";
+            var file_json = "https://raw.githubusercontent.com/viggggnesh/CSGO_Major_Data/main/updated_player_stats.json";
+            var file_2021 = "https://raw.githubusercontent.com/viggggnesh/CSGO_Major_Data/main/player_stats_2021.csv";
+            
+            d3.csv(file_2021).then(function(data){
+
+                // for (var  i=0; i<data.length; i++)    {
+                //     const element = data[i]
+                //     console.log(function(element){
+                //         if (element.Name == "Niko"){
+                //             var total 
+                //             return total = sum(element, d => d.Kills);
+                //         }
+                //     })
+                //     //console.log(element.Team);
+                // }
+
+                console.log(d3.sum(data, function(d)
+                {
+                    return d.Kills
+                }))
+                
+                // console.log(data[0].Name);
+
+                d3.select(".text-here").append("player-name")
+                    .enter(data[0].Name)
+                    .append("p")
+                    // .html(function(data){
+                    //     if (data.Year == "01-11-2021"){return data.Name}
+                    // })
+                
+
+                })
+
 
             window.onload = function(){
-
-                d3.csv("https://raw.githubusercontent.com/viggggnesh/CSGO_Major_Data/main/updated_player_stats.csv").then(function(data){
-
-                    // for (var  i=0; i<data.length; i++)    {
-                    //     const element = data[i]
-                    //     console.log(function(element){
-                    //         if (element.Name == "Niko"){
-                    //             var total 
-                    //             return total = sum(element, d => d.Kills);
-                    //         }
-                    //     })
-                    //     //console.log(element.Team);
-                    // }
-
-                    console.log(d3.sum(data, function(d)
-                    {
-                        if (d.Year.match(/.*2021/)){return d.Kills}
-                    }))
-                    
-                    // console.log(data[0].Name);
-
-                    d3.select(".text-here").append("player-name")
-                        .enter(data[0].Name)
-                        .append("p")
-                        // .html(function(data){
-                        //     if (data.Year == "01-11-2021"){return data.Name}
-                        // })
-                 
-
-                    })
+            
             
             }
+
+
         </script>
     </body>
 </html>
