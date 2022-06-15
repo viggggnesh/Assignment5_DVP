@@ -35,32 +35,34 @@ ui <- fluidPage(
     color: purple;
     }
     "),
-  
-  #Sidebar Panel
-  
-  #Main Panel
-  mainPanel(
+  fluidRow(
+    column(width = 12, offset = 6, 
+           # Navigation button
+           actionButton("navFwd", "Next"),
+           actionButton("navBack", "Back"),
+           ),
     
-    # Navigation button
-    actionButton("navFwd", "Next"),
-    actionButton("navBack", "Back"),
-    
-    # Render HTML output
-    
-    # Introduction
-    hidden(tags$div(id = "introduction",
-                    HTML(paste("<p><h1>Welcome</h1></p>
+    fluidRow(
+      column(width = 12,
+             #Main Panel
+             mainPanel(
+               
+               # Render HTML output
+               
+               # Introduction
+               hidden(tags$div(id = "introduction",
+                               HTML(paste("<p><h1>Welcome</h1></p>
                 <p>This is a visualization narrative created to explain the performance of team Natus Vincere in the CS:GO Major championship held at Stockholm in early November 2021.</p>
                 <p>Before the performance is analysed through the use of visuals, a brief walkthrough of certain elements must be done.</p>
                 <p>Use the buttons to navigate through the content and click on highlighted links ", actionLink("tutorial_link", "such as this")," to display additional information. </p>"
-                ))
-                          
-      )
-    ),    
-    
-    # About the game and certain rules
-    hidden(tags$div(id = "about",
-                    HTML(paste("<p><h1>CS:GO and Major</h1></p>
+                               ))
+                               
+               )
+               ),    
+               
+               # About the game and certain rules
+               hidden(tags$div(id = "about",
+                               HTML(paste("<p><h1>CS:GO and Major</h1></p>
             <p>CS:GO (Counter Strike : Global Offensive) is a first person online multiplayer game that allows players to engage in a 5v5 battle for various tournaments. Among those is a tournament called the 'Major'.
                 It is the most pretigious tournament with the highest prize pool.
             </p>
@@ -76,28 +78,31 @@ ui <- fluidPage(
             developers before the tournament.
             <br>
             Majors are events that consist of 16 teams of which 4 make the playoffs with 1 eventual champion. Currently there are 2 majors every", actionLink("year", "year.", ))))),
-    
-    # Motivation of the project
-    hidden(tags$div(id = "data_viz",
-                    HTML(paste("
+               
+               # Motivation of the project
+               hidden(tags$div(id = "data_viz",
+                               HTML(paste("
             <p><h1>Data Visualization Project</h1></p>
             <p>
                 The most recent even was won by the team Natus Vincere undefeated in every map/series they played. This project is a way to analyse the performance of the champions in comparison to other 
                 teams at the event.
             </p>"))
-      )
-    ),
-    
-  # Player performance
-  hidden(tags$div(id = "player_rating_dotplot",
-                  HTML(paste(
-                    fluidRow(
-                      column(6, "graph here"),
-                      column(6, "text here")
-                    )
-                  ))))
+               )
+               ),
+               
+               # Player performance
+               hidden(tags$div(id = "player_rating_dotplot",
+                               HTML(paste(
+                                 fluidRow(
+                                   column(6, "graph here"),
+                                   column(6, "text here")
+                                 )
+                               ))))
+               
+               ))
+    )
   
-  , width = 12)
+  )
 )
 
 server <- function(input, output){
