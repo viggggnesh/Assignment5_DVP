@@ -16,13 +16,14 @@ library(shiny)
 library(shinyjs)
 library(shinyBS)
 
-ui <- fluidPage(
+ui <- 
+  fluidPage(
   useShinyjs(),
   
   tags$style("
     body{
     
-    margin: 0;
+    margin: 15px;
     background: #ccba7c;
     background-attachment: fixed;
     background-position: center;
@@ -31,19 +32,37 @@ ui <- fluidPage(
   
     }
     
-    #about {
-    color: purple;
+    #introduction{
+    
     }
+    
+    #about{
+    
+    }
+    
+    #data-viz{
+    
+    }
+    
+    #player_rating_dotplot{
+    
+    }
+    
     "),
+
   fluidRow(
-    column(width = 12, offset = 6, 
-           # Navigation button
-           actionButton("navFwd", "Next"),
-           actionButton("navBack", "Back"),
-           ),
+    column(width = 12, 
+           " ",
+           fluidRow(
+             column(width = 12, offset = 6,
+                    # Navigation button
+                    actionButton("navFwd", "Next"),
+                    actionButton("navBack", "Back"),
+             )
+           )
+           )),
     
     fluidRow(
-      column(width = 12,
              #Main Panel
              mainPanel(
                
@@ -99,10 +118,11 @@ ui <- fluidPage(
                                  )
                                ))))
                
-               ))
-    )
+             )
+             )
+    
   
-  )
+  
 )
 
 server <- function(input, output){
