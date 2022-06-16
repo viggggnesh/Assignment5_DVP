@@ -1,3 +1,4 @@
+# Load library
 library(tidyverse)
 library(readxl)
 library(readr)
@@ -9,21 +10,36 @@ library(lubridate)
 library(Dict)
 library(data.table)
 library(ggraph)
+library(DT)
 library(ggrepel)
 library(fmsb)
 library(r2d3)
+library(plotly)
 library(shiny)
 library(shinyjs)
 library(shinyBS)
+library(rio)
+library(devtools)
 
+<<<<<<< Updated upstream
+=======
+# loading csv file
+df_ <- rio::import("rating_player.csv")
+
+# Shiny UI
+>>>>>>> Stashed changes
 ui <- fluidPage(
   useShinyjs(),
   
   tags$style("
     body{
     
+<<<<<<< Updated upstream
     margin: 0;
     background: #ccba7c;
+=======
+    margin: 15px;
+>>>>>>> Stashed changes
     background-attachment: fixed;
     background-position: center;
     background-repeat: no-repeat;
@@ -31,8 +47,13 @@ ui <- fluidPage(
   
     }
     
+<<<<<<< Updated upstream
     #about {
     color: purple;
+=======
+    #introduction{
+    align:center;
+>>>>>>> Stashed changes
     }
     "),
   
@@ -45,11 +66,34 @@ ui <- fluidPage(
     actionButton("navFwd", "Next"),
     actionButton("navBack", "Back"),
     
+<<<<<<< Updated upstream
     # Render HTML output
     
     # Introduction
     hidden(tags$div(id = "introduction",
                     HTML(paste("<p><h1>Welcome</h1></p>
+=======
+    "),
+
+  fluidRow(
+           fluidRow(align = "center",
+             
+              # Navigation button
+              actionButton("navFwd", "Next"),
+              actionButton("navBack", "Back"),
+           )
+           ),
+    
+    fluidRow(
+             #Main Panel
+             mainPanel(align = "center",
+               
+               # Render HTML output
+               
+               # Introduction
+               hidden(tags$div(id = "introduction",
+                               HTML(paste("<p><h1>Welcome</h1></p>
+>>>>>>> Stashed changes
                 <p>This is a visualization narrative created to explain the performance of team Natus Vincere in the CS:GO Major championship held at Stockholm in early November 2021.</p>
                 <p>Before the performance is analysed through the use of visuals, a brief walkthrough of certain elements must be done.</p>
                 <p>Use the buttons to navigate through the content and click on highlighted links ", actionLink("tutorial_link", "such as this")," to display additional information. </p>"
@@ -85,6 +129,7 @@ ui <- fluidPage(
                 The most recent even was won by the team Natus Vincere undefeated in every map/series they played. This project is a way to analyse the performance of the champions in comparison to other 
                 teams at the event.
             </p>"))
+<<<<<<< Updated upstream
       )
     ),
     
@@ -96,10 +141,31 @@ ui <- fluidPage(
                       column(6, "text here")
                     )
                   ))))
+=======
+               )
+               ),
+               
+               # Player performance
+               hidden(tags$div(id = "player_rating_dotplot",
+                               HTML(paste(
+                                 fluidRow(
+                                          plotOutput("rating_plot", click = "plot_click",
+                                          hover = hoverOpts("plot_hover", delay = 100,delayType = "debounce"), width = "100%"),
+                                          uiOutput("hover_info", style = "pointer-event:none"),
+                                          tableOutput("player_data")
+                                 )
+                               ))))
+               
+             )
+             )
+    
+  
+>>>>>>> Stashed changes
   
   , width = 12)
 )
 
+# Shiny server
 server <- function(input, output){
   
   # Initialize counter for navigation
@@ -141,6 +207,57 @@ server <- function(input, output){
   observeEvent(input$tutorial_link, {
     showNotification(paste("Pop up will appear with additional text. This can be closed."), closeButton = TRUE)
   })
+  
+  output$rating_plot <- renderPlot({
+    
+    df_ <- rio::import("rating_player.csv")
+    df_ %>%
+      filter(as.character(Year) %like% "2021") %>%
+      ggplot(aes(Year, Rating, color=Team, label=Name)) + theme_classic() + theme(legend.position = "none") +
+      theme(axis.text.x = element_text(angle = 45, vjust = 0.5)) +
+      scale_x_continuous("Day", labels = df_$Year, breaks = df_$Year) + ylim(0,2) + geom_point()
+    
+  })
+  
+  output$player_data <- renderTable({
+    df_ <- rio::import("rating_player.csv")
+    
+    req(input$plot_click)
+    nearPoints(df_,input$plot_click, xvar = "Year", yvar = "Rating", threshold = 5, maxpoints = 1, addDist = TRUE)
+  })
+  
+  output$hover_info <- renderUI({
+    req(input$plot_hover)
+    
+    df_ <- rio::import("rating_player.csv")
+    hover <- input$plot_hover
+    plot_hover(df_, hover)
+  })
+  
+}
+
+plot_hover <- function(df_, hover){
+  point <- nearPoints(df_, hover, threshold = 5, maxpoints = 1, addDist = TRUE)
+  
+  if (nrow(point) == 0) return(NULL)
+  
+  left_px <- hover$coords_css$x
+  top_px <- hover$coords_css$y
+  
+  # create style property for tooltip
+  # background color is set so tooltip is a bit transparent
+  # z-index is set so we are sure tooltip will be on top
+  style <- paste0("position:absolute; z-index:100; background-color: rgba(245, 245, 245, 0.85); ",
+                  "left:", left_px + 2, "px; top:", top_px + 2, "px;")
+  
+  # Tooltip
+  wellPanel(
+    style = style,
+    p(HTML(paste0("<b> Name: </b>", point$Name, "<br/>",
+                  "<b> Rating: </b>", point$Rating, "<br/>",
+                  "<b> Year: </b>", point$Year, "<br/>"
+                  )))
+  )
 }
 
 # Trigger shinyApp
