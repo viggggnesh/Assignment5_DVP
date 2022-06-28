@@ -12,7 +12,9 @@ library(ggplot2)
 library(lubridate)
 library(Dict)
 library(data.table)
+library(htmlwidgets)
 library(ggraph)
+library(ggiraph)
 library(DT)
 library(fmsb)
 library(rio)
@@ -125,17 +127,17 @@ ui <- fluidPage(
            
            # Player performance
            hidden(tags$div(id = "player_rating_dotplot",
-                           HTML(paste(
+                           
                              fluidRow(div(style="overflow-y:scroll;",
                                       column(6,
-                                             fluidRow(
-                                               h1(style="text-align:center","Player performance rating for 2021 Major"),
-                                               plotOutput("rating_plot",
-                                                                 click = "plot_click",
-                                                                 hover = hoverOpts("plot_hover", delay = 100,delayType = "debounce"), width = "100%"
-                                                                 ),
-                                                      uiOutput("on_hover_info", style = "pointer-event:none")
-                                                      ),
+                                             # fluidRow(
+                                             #   h1(style="text-align:center","Player performance rating for 2021 Major"),
+                                             #   plotOutput("rating_plot", click = "plot_click",
+                                             #              hover = hoverOpts("plot_hover", delay = 100,delayType = "debounce"), width = "100%"
+                                             #              ),
+                                             #   uiOutput("on_hover_info", style = "pointer-event:none")
+                                             #          ),
+                                             fluidRow(girafeOutput("rating_plot")),
                                              fluidRow(
                                                div(style="margin:9.5px; text-align:center;",
                                                  wellPanel(
@@ -156,8 +158,8 @@ ui <- fluidPage(
                                                )
                                              ),
                                              fluidRow(div(style="align-left;",
-                                                div(style="margin:11px",plotOutput("player_radar_1", width = "100%")),
-                                                div(style="margin:11px",plotOutput("player_radar_2", width = "100%"))
+                                                div(style="margin:9px",plotOutput("player_radar_1", width = "100%")),
+                                                div(style="margin:9px",plotOutput("player_radar_2", width = "100%"))
                                                       ))
                                              ),
                                       column(6,
@@ -181,7 +183,7 @@ ui <- fluidPage(
                                              )
                                             )
                                       ))
-                           )))),
+                           )),
            
            hidden(tags$div(id="players_and_teams",
                          HTML(paste(
@@ -290,36 +292,72 @@ server <- function(input, output){
   # Output render section #
   #########################
   
-  # Plot for player rating 
-  output$rating_plot <- renderPlot({
+  # # Plot for player rating 
+  # output$rating_plot <- renderPlot({
+  #   
+  #   # Reading data from file
+  #   df_ <- rio::import("rating_player.csv")
+  #   df_$Year <- as.Date(df_$Year, format="%d-%m-%Y")
+  #   
+  #   # Get checkbox selection input
+  #   selectionPlacements <- input$team_placing
+  # 
+  #   # Chain commands with the data frame  
+  #   df_ %>%
+  #     filter(as.character(Year) %like% "2021") %>%
+  #     filter(Placement %like% paste0(selectionPlacements,collapse = "|")) %>%
+  # 
+  #     # Plot options
+  #     ggplot(aes(Year, Rating, color=Team, group=Name)) +
+  # 
+  # 
+  #     # Theme options
+  #     theme_minimal() + theme(legend.title = element_text(size=15)) + theme(legend.text = element_text(size=15)) +
+  #     theme(axis.text.x = element_text(angle = 25, vjust = 0.5)) + theme(axis.text.x = element_text(size=14)) +
+  #     theme(axis.text.y = element_text(size=14)) + theme(axis.title = element_text(size=15)) +
+  #     
+  # 
+  #     # Scale options
+  #     scale_x_continuous("Days (increasing as tournament reaches conclusion)", labels = df_$Year, breaks = df_$Year) +
+  #     ylim(0.5,2) + geom_point(aes(size=2.5)) +  scale_size(guide="none") + geom_line()
+  # 
+  # }, width = 900)
+  
+  output$rating_plot <- renderGirafe({
     
-    # Reading data from file
     df_ <- rio::import("rating_player.csv")
     df_$Year <- as.Date(df_$Year, format="%d-%m-%Y")
     
     # Get checkbox selection input
     selectionPlacements <- input$team_placing
 
-    # Chain commands with the data frame  
-    df_ %>%
-      filter(as.character(Year) %like% "2021") %>%
-      filter(Placement %like% paste0(selectionPlacements,collapse = "|")) %>%
+    # Chain commands with the data frame
+    girafe(ggobj = 
+           df_ %>%
+             filter(as.character(Year) %like% "2021") %>%
+             filter(Placement %like% paste0(selectionPlacements,collapse = "|")) %>%
+              
+             # Plot options
+             ggplot(aes(Year, Rating, color=Team, group=Name, tooltip=Team, data_id=Name)) +
 
-      # Plot options
-      ggplot(aes(Year, Rating, color=Team, group=Name)) +
+
+             # Theme options
+             theme_minimal() + theme(legend.title = element_text(size=15)) + theme(legend.text = element_text(size=15)) +
+             theme(axis.text.x = element_text(angle = 25, vjust = 0.5)) + theme(axis.text.x = element_text(size=14)) +
+             theme(axis.text.y = element_text(size=14)) + theme(axis.title = element_text(size=15)) +
 
 
-      # Theme options
-      theme_minimal() + theme(legend.title = element_text(size=15)) + theme(legend.text = element_text(size=15)) +
-      theme(axis.text.x = element_text(angle = 25, vjust = 0.5)) + theme(axis.text.x = element_text(size=14)) +
-      theme(axis.text.y = element_text(size=14)) + theme(axis.title = element_text(size=15)) +
-      
-
-      # Scale options
-      scale_x_continuous("Days (increasing as tournament reaches conclusion)", labels = df_$Year, breaks = df_$Year) +
-      ylim(0.5,2) + geom_point(aes(size=2.5)) +  scale_size(guide="none") + geom_line()
-
-  }, width = 900)
+             # Scale options
+             scale_x_continuous("Days (increasing as tournament reaches conclusion)", labels = df_$Year, breaks = df_$Year) +
+             scale_x_date(date_breaks = "1 day", date_labels =  "%b %d") +
+             ylim(0.5,2) + geom_point_interactive(aes(size=2.5, onclick=onclick)) +  scale_size(guide="none") + geom_line(),
+          
+           # Girafe options 
+          options = list(opts_selection(type = "single", only_shiny = FALSE)),width_svg = 9
+          
+    )
+    
+  })
   
   # On hover render information Panel
   output$on_hover_info <- renderUI({
