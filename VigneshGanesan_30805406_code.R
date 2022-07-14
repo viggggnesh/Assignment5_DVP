@@ -350,7 +350,7 @@ server <- function(input, output){
              # Scale options
              scale_x_continuous("Days (increasing as tournament reaches conclusion)", labels = df_$Year, breaks = df_$Year) +
              scale_x_date(date_breaks = "1 day", date_labels =  "%b %d") +
-             ylim(0.5,2) + geom_point_interactive(aes(size=2.5, onclick=onclick)) +  scale_size(guide="none") + geom_line(),
+             ylim(0.5,2) + geom_point_interactive(aes(size=2.5)) +  scale_size(guide="none") + geom_line(),
           
            # Girafe options 
           options = list(opts_selection(type = "single", only_shiny = FALSE)),width_svg = 9
